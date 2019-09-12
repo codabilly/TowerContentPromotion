@@ -1,0 +1,33 @@
+---
+- name: Tower to Tower content promotion playbook
+  hosts: localhost
+  gather_facts: no  
+  vars:
+    org_name: DDS
+    server_source: http://paradox.els.com
+    token_source: Bearer Poq9RuZL1T04BYRYFKbum7RzIsn1AS
+    server_target: http://porky.els.com
+    token_target: Bearer bzcko9yYIaeEdl4BXyZF1NZWxbtM8F
+    projects: 
+      -  'Tower Onboarding tests #1'
+      -  'Tower Onboarding tests #2'
+      -  'Tower Onboarding tests #5'
+      -  'Tower Onboarding tests #10'
+
+  roles:
+    - role: tower_validate_org 
+      vars:
+        - auth: "{{ token_source }}"
+        - target: "{{ server_source }}"
+    - role: tower_garther_projects
+      vars:
+        - auth: "{{ token_source }}"
+        - target: "{{ server_source }}"
+    - role: tower_validate_org 
+      vars:
+        - auth: "{{ token_target }}"
+        - target: "{{ server_target }}"
+    - role: tower_project_project_promote
+      vars:
+        - auth: "{{ token_target }}"
+        - target: "{{ server_target }}"

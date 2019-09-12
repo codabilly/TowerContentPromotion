@@ -1,0 +1,21 @@
+---
+# tasks file for tower_garther_projects
+- name: Getting list of projects for "{{ org_name }} - {{ item }}"
+  # debug:
+  #   msg: "{{ target }}/api/v2/organizations/{{ organization.id }}/projects/?name={{ item | urlencode }}"
+  uri:
+    method: GET
+    headers:
+      Authorization: "{{ auth }}"
+    status_code: 200
+    url: "{{ target }}/api/v2/organizations/{{ organization.id }}/projects/?name={{ item | urlencode }}"
+    return_content: yes
+  register: qry_proj_res
+  loop: "{{ projects }}"
+
+- name: Simplifying the object list
+  set_fact:
+    promotion_content: "{{ promotion_content | default([]) + [item.json.results[0]] }}"
+  loop: "{{ qry_proj_res.results }}"
+
+- debug: var=promotion_content
