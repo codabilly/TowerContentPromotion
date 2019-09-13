@@ -1,2 +1,8 @@
 ---
 # tasks file for tower_pull_invtory_from_repo
+- name: Pull inventory data from repo
+  slurp:
+    src: "{{ target_inventory_file }}"
+  register: inv
+
+- debug: var=inv
