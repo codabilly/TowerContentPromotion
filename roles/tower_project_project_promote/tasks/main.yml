@@ -1,5 +1,8 @@
 ---
 # tasks file for tower_project_project_promote
+- debug:
+    msg: "{{ target }}/api/v2/organizations/{{ organization.id }}/projects/"
+
 - name: Step 1 - Create Project
   vars:
     # proj_scm_cred: 6
@@ -19,17 +22,17 @@
     headers:
       Authorization: "{{ auth }}"
     status_code: 201
-    url: "{{ target }}/v2/organizations/{{ organization.id }}/projects/"
+    url: "{{ target }}/api/v2/organizations/{{ organization.id }}/projects/"
     body_format: json
     body: "{{ payload_project }}"
     return_content: yes
   register: create_proj_res
   loop: "{{ promotion_content }}"
 
-- name: Present Result
-  debug:
-    msg: "{{ create_proj_res.json }}"
+# - name: Present Result
+#   debug:
+#     msg: "{{ create_proj_res }}"
 
-- name: Step 2 - updting proj_obj reference to reflect new values
-  set_fact:
-    proj_obj: "{{ create_proj_res.json }}"
+# - name: Step 2 - updting proj_obj reference to reflect new values
+#   set_fact:
+#     proj_obj: "{{ create_proj_res }}"
