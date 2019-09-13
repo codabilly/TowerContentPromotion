@@ -1,0 +1,10 @@
+---
+# tasks file for tower_pull_inventory
+- name: tower_pull_inventory
+  delegate_to: localhost
+  git:
+    repo: "{{ repo_endpoint }}"
+    dest: "{{ workspace }}"
+
+- debug:
+    msg: "Pulle the inventory file to {{ workspace }}"

@@ -6,13 +6,13 @@
     headers:
       Authorization: "{{ auth }}"
     status_code: 200
-    url: "{{ target }}/api/v2/organizations/"
+    url: "{{ target }}/api/v2/organizations/?name={{ org_name | urlencode }}"
     return_content: yes
   register: res
 
 - name: Get the ID for the Org
   no_log: true
-  set_fact: 
+  set_fact:
     organization: "{{ org }}"
   when: "org_name == org.name"
   loop: "{{ res.json.results }}"
@@ -22,7 +22,7 @@
 - name: Check if the org was found
   fail:
     msg: The organization '{{ org_name }}' was not found! Unable to continue
-  when: 'organization is undefined' 
+  when: 'organization is undefined'
 
 - name: Presenting match
   debug: var=organization

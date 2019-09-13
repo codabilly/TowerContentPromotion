@@ -1,0 +1,23 @@
+---
+- name: pull a file from somewhere
+  hosts: localhost
+  vars:
+    target: http://paradox.els.com #do not port
+    auth: Bearer Y2Dgbx4f6Cw99sRjCEzPmIsEkOHAoO #do not port
+    org_name: DDS #do not port
+    # rand: "{{ansible_date_time.year | int}}"
+    rand: "{{ansible_date_time.year | int}}{{ansible_date_time.month | int}}{{ansible_date_time.day | int}}-{{ 100000 | random}}-{{ 100000 | random}}"
+    workspace: "/tmp/promotion/{{ rand }}"
+    repo_endpoint: https://github.com/codabilly/inventories/
+    inv_file: inventory_promoted.yml
+    inv_name: nginx
+    inv_desc: Automagically created
+    inv_exists: false # values: True | False
+  roles:
+    - tower_ansible_workaround_for_double_evaluation
+    - tower_validate_org
+    - tower_find_invetory
+    - { role: tower_pull_inventory, when: not inv_exists and inv_obj is undefined }
+    - { role: tower_load_inventory_file, when: not inv_exists and inv_obj is undefined }
+    - { role: tower_create_inventory, when: not inv_exists and inv_obj is undefined }
+    - { role: tower_populate_inventory_with_hosts, when: (not inv_exists) and (inv_obj is defined) }

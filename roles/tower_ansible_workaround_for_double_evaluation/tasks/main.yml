@@ -1,0 +1,5 @@
+---
+# tasks file for tower_ansible_workaround_for_double_evaluation
+- name: Weird workaround for Ansible's inefficient method of constantly evaluating global scope variables
+  set_fact:
+    workspace: "{{ workspace }}/{{ rand }}"
