@@ -28,11 +28,3 @@
     return_content: yes
   register: create_proj_res
   loop: "{{ promotion_content }}"
-
-# - name: Present Result
-#   debug:
-#     msg: "{{ create_proj_res }}"
-
-# - name: Step 2 - updting proj_obj reference to reflect new values
-#   set_fact:
-#     proj_obj: "{{ create_proj_res }}"

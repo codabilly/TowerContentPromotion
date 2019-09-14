@@ -1,0 +1,27 @@
+---
+# tasks file for tower_create_job_template
+- name: Step 1 - Pausing to allow the sync of the repo to happen
+  pause:
+    seconds: 20
+
+- name: creating job template "{{ template_name }}"
+  vars:
+    payload_job_template:
+      description: "{{ jt_obj.description }}"
+      project: "{{ jt_obj.project }}"
+      playbook: "{{ jt_obj.playbook }}"
+      inventory: "{{ inv_obj.id }}"
+      name: "{{ jt_obj.name }}"
+  uri:
+    method: POST
+    headers:
+      Authorization: "{{ auth }}"
+    status_code: 201
+    url: "{{ target }}/api/v2/job_templates/"
+    body_format: json
+    body: "{{ payload_job_template }}"
+    return_content: yes
+  register: res_job_template
+
+- name: return the job templete info
+  debug: var=res_job_template.json

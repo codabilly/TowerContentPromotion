@@ -17,26 +17,40 @@
     inv_desc: Automagically created
     inv_exists: false # values: True | False
     projects: 
-      - 'Tower Onboarding tests #1' #remember to change variable name to singular
+      - 'Tower Onboarding tests #2' #remember to change variable name to singular
+    template_name: Automagically created job template
 
   roles:
+  # source server
     - role: tower_validate_org 
       vars:
         - auth: "{{ token_source }}"
         - target: "{{ server_source }}"
+
     - role: tower_garther_projects
       vars:
         - auth: "{{ token_source }}"
         - target: "{{ server_source }}"
+
+    - role: tower_process_job_template
+      vars:
+        - auth: "{{ token_source }}"
+        - target: "{{ server_source }}"
+        - proj_obj: "{{ promotion_content }}"
+
+# target server    
     - role: tower_validate_org 
       vars:
         - auth: "{{ token_target }}"
         - target: "{{ server_target }}"
+    
     - role: tower_project_promote
       vars:
         - auth: "{{ token_target }}"
         - target: "{{ server_target }}"
+    
     - tower_ansible_workaround_for_double_evaluation
+    
     - role: tower_find_invetory
       vars:
         - auth: "{{ token_target }}"
@@ -63,3 +77,9 @@
         - auth: "{{ token_target }}"
         - target: "{{ server_target }}"
       when: (not inv_exists) and (inv_obj is defined)
+
+    - role: tower_process_job_template
+      vars:
+        - auth: "{{ token_target }}"
+        - target: "{{ server_target }}"
+      
