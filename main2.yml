@@ -1,0 +1,82 @@
+---
+- name: Tower to Tower content promotion playbook
+  hosts: localhost
+  vars:
+    org_name: DDS
+    server_source: http://paradox.els.com
+    token_source: Bearer Poq9RuZL1T04BYRYFKbum7RzIsn1AS
+    server_target: http://porky.els.com
+    token_target: Bearer bzcko9yYIaeEdl4BXyZF1NZWxbtM8F
+    target_inventory_file: https://github.com/codabilly/inventories/blob/master/inventory_promoted.yml
+    rand: "{{ansible_date_time.year | int}}{{ansible_date_time.month | int}}{{ansible_date_time.day | int}}-{{ 100000 | random}}-{{ 100000 | random}}"
+    workspace: "/tmp/promotion/{{ rand }}"
+    inventory_repo: https://github.com/codabilly/inventories/
+    inv_file: inventory_promoted.yml
+    inv_name: nginx
+    inv_desc: Automagically created
+    inv_exists: True # values: True | False
+    projects: 'Tower Onboarding tests #2' #remember to change variable name to singular
+    template_name: Automagically created job template
+
+  roles:
+  # source server
+    - role: tower_validate_org
+      vars:
+        - auth: "{{ token_source }}"
+        - target: "{{ server_source }}"
+
+    - role: tower_garther_projects
+      vars:
+        - auth: "{{ token_source }}"
+        - target: "{{ server_source }}"
+
+    - role: tower_process_job_template
+      vars:
+        - auth: "{{ token_source }}"
+        - target: "{{ server_source }}"
+        - proj_obj: "{{ promotion_content }}"
+
+# target server
+    - role: tower_validate_org
+      vars:
+        - auth: "{{ token_target }}"
+        - target: "{{ server_target }}"
+
+    - role: tower_project_promote
+      vars:
+        - auth: "{{ token_target }}"
+        - target: "{{ server_target }}"
+
+    - tower_ansible_workaround_for_double_evaluation
+
+    - role: tower_find_invetory
+      vars:
+        - auth: "{{ token_target }}"
+        - target: "{{ server_target }}"
+
+    - role: tower_pull_inventory
+      vars:
+        - auth: "{{ token_target }}"
+        - target: "{{ server_target }}"
+        - repo_endpoint: "{{ inventory_repo }}"
+      when: not inv_exists and inv_obj is undefined
+
+    - role: tower_load_inventory_file
+      when: not inv_exists and inv_obj is undefined
+
+    - role: tower_create_inventory
+      vars:
+        - auth: "{{ token_target }}"
+        - target: "{{ server_target }}"
+      when: not inv_exists and inv_obj is undefined
+
+    - role: tower_populate_inventory_with_hosts
+      vars:
+        - auth: "{{ token_target }}"
+        - target: "{{ server_target }}"
+      when: (not inv_exists) and (inv_obj is defined)
+
+    - role: tower_create_job_template
+      vars:
+        - auth: "{{ token_target }}"
+        - target: "{{ server_target }}"

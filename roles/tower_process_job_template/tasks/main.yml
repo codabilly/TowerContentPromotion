@@ -11,8 +11,8 @@
   register: job_templates
 
 - name: Debug 1 - list retrieved job_templates
-  # debug: var=job_templates.json
-  debug: var=proj_obj
+  debug: var=job_templates.json.results
+  # debug: var=proj_obj
 
 - name: Step 2 - iterating over results to set value for proj_obj variable
   set_fact:

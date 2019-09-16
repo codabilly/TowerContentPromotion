@@ -1,6 +1,6 @@
 ---
 # tasks file for tower_garther_projects
-- name: Getting list of projects for "{{ org_name }} - {{ item }}"
+- name: Getting list of projects for "{{ org_name }} - {{ template_name }}"
   # debug:
   #   msg: "{{ target }}/api/v2/organizations/{{ organization.id }}/projects/?name={{ item | urlencode }}"
   uri:
@@ -8,14 +8,17 @@
     headers:
       Authorization: "{{ auth }}"
     status_code: 200
-    url: "{{ target }}/api/v2/organizations/{{ organization.id }}/projects/?name={{ item | urlencode }}"
+    url: "{{ target }}/api/v2/organizations/{{ organization.id }}/projects/?name={{ projects | urlencode }}"
     return_content: yes
   register: qry_proj_res
-  loop: "{{ projects }}"
+  # loop: "{{ projects }}"
+
+- debug: var=qry_proj_res.json.results[0]
 
 - name: Simplifying the object list
   set_fact:
-    promotion_content: "{{ promotion_content | default([]) + [item.json.results[0]] }}"
-  loop: "{{ qry_proj_res.results }}"
+    promotion_content: "{{ qry_proj_res.json.results[0] }}"
+  #   promotion_content: "{{ promotion_content | default([]) + [item.json.results[0]] }}"
+  # loop: "{{ qry_proj_res.results }}"
 
 - debug: var=promotion_content
